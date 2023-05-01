@@ -128,3 +128,6 @@ pub fn terminate() -> ! {
         halt();
     }
 }
+
+pub fn init() {
+}
