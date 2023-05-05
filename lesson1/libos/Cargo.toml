@@ -5,7 +5,10 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+a0 = ["mmu-identity"]
+
 [dependencies]
 riscv = "0.10"
 sbi-rt = { version = "0.0.2", features = ["legacy"] }
-mmu = { path = "../mmu_identity" }
+mmu-identity = { path = "../mmu_identity", optional = true }

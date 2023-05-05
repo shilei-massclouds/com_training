@@ -1,5 +1,5 @@
 [package]
-name = "mmu"
+name = "mmu-identity"
 version = "0.1.0"
 edition = "2021"
 

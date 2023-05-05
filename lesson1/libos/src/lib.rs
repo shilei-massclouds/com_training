@@ -4,7 +4,8 @@
 #![feature(naked_functions)]
 
 // component mmu
-extern crate mmu;
+#[cfg(feature = "a0")]
+extern crate mmu_identity as mmu;
 
 pub use mmu::KERNEL_BASE;
 
