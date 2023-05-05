@@ -14,7 +14,6 @@ use riscv::register::stvec;
 use riscv::register::sstatus;
 
 const TASK_STACK_SIZE: usize = 0x40000;
-const PHYS_VIRT_OFFSET: usize = 0xffff_ffc0_0000_0000;
 
 #[link_section = ".bss.stack"]
 static mut BOOT_STACK: [u8; TASK_STACK_SIZE] = [0; TASK_STACK_SIZE];
@@ -68,17 +67,12 @@ unsafe extern "C" fn _start() -> ! {
         // 5. post process paging
         call    {post_mmu}
 
-        li      s2, {phys_virt_offset}  // fix up virtual high address
-        add     sp, sp, s2
-
         // 6. restore hartid & dtb_ptr
         mv      a0, s0
         mv      a1, s1
 
-        // 7. enter rust world
-        la      a2, {rust_entry}
-        add     a2, a2, s2
-        jalr    a2                      // call rust_entry(hartid, dtb)
+        // 7. enter rust world: call rust_entry(hartid, dtb)
+        call    {rust_entry}
 
         // 8. Unreachable!!!
         j       .",
@@ -87,7 +81,6 @@ unsafe extern "C" fn _start() -> ! {
         pre_mmu = sym mmu::pre_mmu,
         enable_mmu = sym mmu::enable_mmu,
         post_mmu = sym mmu::post_mmu,
-        phys_virt_offset = const PHYS_VIRT_OFFSET,
         rust_entry = sym rust_entry,
         options(noreturn),
     )

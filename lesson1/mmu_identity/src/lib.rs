@@ -1,6 +1,9 @@
 #![no_std]
+#![feature(asm_const)]
 
 use riscv::register::satp;
+
+const PHYS_VIRT_OFFSET: usize = 0xffff_ffc0_0000_0000;
 
 #[link_section = ".data.boot_page_table"]
 static mut BOOT_PT_SV39: [u64; 512] = [0; 512];
@@ -19,4 +22,11 @@ pub unsafe fn enable_mmu() {
 }
 
 pub unsafe fn post_mmu() {
+    core::arch::asm!("
+        li      t0, {phys_virt_offset}  // fix up virtual high address
+        add     sp, sp, t0
+        add     ra, ra, t0
+        ret     ",
+        phys_virt_offset = const PHYS_VIRT_OFFSET,
+    )
 }
