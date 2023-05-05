@@ -3,11 +3,13 @@
 #![feature(asm_const)]
 #![feature(naked_functions)]
 
+// component mmu
+extern crate mmu;
+
 mod lang_items;
 mod trap;
 pub mod stdio;
 
-use riscv::register::satp;
 use riscv::register::stvec;
 use riscv::register::sstatus;
 
@@ -16,25 +18,6 @@ const PHYS_VIRT_OFFSET: usize = 0xffff_ffc0_0000_0000;
 
 #[link_section = ".bss.stack"]
 static mut BOOT_STACK: [u8; TASK_STACK_SIZE] = [0; TASK_STACK_SIZE];
-
-#[link_section = ".data.boot_page_table"]
-static mut BOOT_PT_SV39: [u64; 512] = [0; 512];
-
-unsafe fn pre_mmu() {
-    // 0x8000_0000..0xc000_0000, VRWX_GAD, 1G block
-    BOOT_PT_SV39[2] = (0x80000 << 10) | 0xef;
-    // 0xffff_ffc0_8000_0000..0xffff_ffc0_c000_0000, VRWX_GAD, 1G block
-    BOOT_PT_SV39[0x102] = (0x80000 << 10) | 0xef;
-}
-
-unsafe fn enable_mmu() {
-    let page_table_root = BOOT_PT_SV39.as_ptr() as usize;
-    satp::set(satp::Mode::Sv39, 0, page_table_root >> 12);
-    riscv::asm::sfence_vma_all();
-}
-
-unsafe fn post_mmu() {
-}
 
 pub(crate) fn clear_bss() {
     unsafe {
@@ -101,9 +84,9 @@ unsafe extern "C" fn _start() -> ! {
         j       .",
         boot_stack = sym BOOT_STACK,
         boot_stack_size = const TASK_STACK_SIZE,
-        pre_mmu = sym pre_mmu,
-        enable_mmu = sym enable_mmu,
-        post_mmu = sym post_mmu,
+        pre_mmu = sym mmu::pre_mmu,
+        enable_mmu = sym mmu::enable_mmu,
+        post_mmu = sym mmu::post_mmu,
         phys_virt_offset = const PHYS_VIRT_OFFSET,
         rust_entry = sym rust_entry,
         options(noreturn),

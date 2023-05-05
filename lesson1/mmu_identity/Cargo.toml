@@ -1,5 +1,5 @@
 [package]
-name = "libos"
+name = "mmu"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,5 +7,3 @@ edition = "2021"
 
 [dependencies]
 riscv = "0.10"
-sbi-rt = { version = "0.0.2", features = ["legacy"] }
-mmu = { path = "../mmu_identity" }
