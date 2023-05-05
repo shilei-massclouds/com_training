@@ -5,6 +5,7 @@
 
 mod lang_items;
 mod trap;
+pub mod stdio;
 
 use riscv::register::satp;
 use riscv::register::stvec;
@@ -18,19 +19,6 @@ static mut BOOT_STACK: [u8; TASK_STACK_SIZE] = [0; TASK_STACK_SIZE];
 
 #[link_section = ".data.boot_page_table"]
 static mut BOOT_PT_SV39: [u64; 512] = [0; 512];
-
-/// Writes a byte to the console.
-pub fn putchar(c: u8) {
-    #[allow(deprecated)]
-    sbi_rt::legacy::console_putchar(c as usize);
-}
-
-/// Write a slice of bytes to the console.
-pub fn write_bytes(bytes: &[u8]) {
-    for c in bytes {
-        putchar(*c);
-    }
-}
 
 unsafe fn init_boot_page_table() {
     // 0x8000_0000..0xc000_0000, VRWX_GAD, 1G block
@@ -58,11 +46,14 @@ pub fn set_trap_vector_base(stvec: usize) {
     unsafe { stvec::write(stvec, stvec::TrapMode::Direct) }
 }
 
-unsafe extern "C" fn rust_entry(_cpu_id: usize, _dtb: usize) {
+unsafe extern "C" fn rust_entry(cpu_id: usize, dtb: usize) {
+    extern "C" {
+        fn main(cpu_id: usize, dtb: usize);
+    }
+
     clear_bss();
     set_trap_vector_base(trap_vector_base as usize);
-    write_bytes(b"Hello, booter!\n");
-    //rust_main(cpu_id, dtb);
+    main(cpu_id, dtb);
     terminate();
 }
 
