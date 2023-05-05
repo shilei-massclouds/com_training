@@ -20,17 +20,20 @@ static mut BOOT_STACK: [u8; TASK_STACK_SIZE] = [0; TASK_STACK_SIZE];
 #[link_section = ".data.boot_page_table"]
 static mut BOOT_PT_SV39: [u64; 512] = [0; 512];
 
-unsafe fn init_boot_page_table() {
+unsafe fn pre_mmu() {
     // 0x8000_0000..0xc000_0000, VRWX_GAD, 1G block
     BOOT_PT_SV39[2] = (0x80000 << 10) | 0xef;
     // 0xffff_ffc0_8000_0000..0xffff_ffc0_c000_0000, VRWX_GAD, 1G block
     BOOT_PT_SV39[0x102] = (0x80000 << 10) | 0xef;
 }
 
-unsafe fn init_mmu() {
+unsafe fn enable_mmu() {
     let page_table_root = BOOT_PT_SV39.as_ptr() as usize;
     satp::set(satp::Mode::Sv39, 0, page_table_root >> 12);
     riscv::asm::sfence_vma_all();
+}
+
+unsafe fn post_mmu() {
 }
 
 pub(crate) fn clear_bss() {
@@ -64,32 +67,45 @@ unsafe extern "C" fn rust_entry(cpu_id: usize, dtb: usize) {
 unsafe extern "C" fn _start() -> ! {
     // PC = 0x8020_0000
     // a0 = hartid
-    // a1 = dtb
+    // a1 = dtb_ptr
     core::arch::asm!("
-        mv      s0, a0                  // save hartid
-        mv      s1, a1                  // save DTB pointer
+        // 1. save hartid & dtb_ptr
+        mv      s0, a0
+        mv      s1, a1
+
+        // 2. setup boot stack
         la      sp, {boot_stack}
         li      t0, {boot_stack_size}
-        add     sp, sp, t0              // setup boot stack
+        add     sp, sp, t0
 
-        call    {init_boot_page_table}
-        call    {init_mmu}              // setup boot page table and enabel MMU
+        // 3. setup boot page table
+        call    {pre_mmu}
+        // 4. enable paging
+        call    {enable_mmu}
+        // 5. post process paging
+        call    {post_mmu}
 
         li      s2, {phys_virt_offset}  // fix up virtual high address
         add     sp, sp, s2
 
+        // 6. restore hartid & dtb_ptr
         mv      a0, s0
         mv      a1, s1
-        la      a2, {entry}
+
+        // 7. enter rust world
+        la      a2, {rust_entry}
         add     a2, a2, s2
         jalr    a2                      // call rust_entry(hartid, dtb)
+
+        // 8. Unreachable!!!
         j       .",
         boot_stack = sym BOOT_STACK,
         boot_stack_size = const TASK_STACK_SIZE,
-        init_boot_page_table = sym init_boot_page_table,
-        init_mmu = sym init_mmu,
+        pre_mmu = sym pre_mmu,
+        enable_mmu = sym enable_mmu,
+        post_mmu = sym post_mmu,
         phys_virt_offset = const PHYS_VIRT_OFFSET,
-        entry = sym rust_entry,
+        rust_entry = sym rust_entry,
         options(noreturn),
     )
 }
