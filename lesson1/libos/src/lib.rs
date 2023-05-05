@@ -6,6 +6,8 @@
 // component mmu
 extern crate mmu;
 
+pub use mmu::KERNEL_BASE;
+
 mod lang_items;
 mod trap;
 pub mod stdio;

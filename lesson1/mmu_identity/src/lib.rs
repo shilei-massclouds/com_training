@@ -3,6 +3,8 @@
 
 use riscv::register::satp;
 
+pub const KERNEL_BASE: usize = 0xffff_ffff_c000_0000;
+
 const PHYS_VIRT_OFFSET: usize = 0xffff_ffc0_0000_0000;
 
 #[link_section = ".data.boot_page_table"]
@@ -13,6 +15,9 @@ pub unsafe fn pre_mmu() {
     BOOT_PT_SV39[2] = (0x80000 << 10) | 0xef;
     // 0xffff_ffc0_8000_0000..0xffff_ffc0_c000_0000, VRWX_GAD, 1G block
     BOOT_PT_SV39[0x102] = (0x80000 << 10) | 0xef;
+
+    // 0xffff_ffff_c000_0000..highest, VRWX_GAD, 1G block
+    BOOT_PT_SV39[0x1ff] = (0x80000 << 10) | 0xef;
 }
 
 pub unsafe fn enable_mmu() {
