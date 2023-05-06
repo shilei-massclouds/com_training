@@ -6,6 +6,8 @@
 // component mmu
 #[cfg(feature = "a0")]
 extern crate mmu_identity as mmu;
+#[cfg(any(feature = "a1_enable", feature = "a1_disable"))]
+extern crate mmu_alterable as mmu;
 
 pub use mmu::KERNEL_BASE;
 

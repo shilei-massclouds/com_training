@@ -2,6 +2,7 @@
 export RUSTC_BOOTSTRAP := 1
 
 APP ?= a0
+APP_FEATURES ?=
 
 OBJCOPY ?= rust-objcopy --binary-architecture=riscv64
 
@@ -20,6 +21,7 @@ $(OUT_ELF): FORCE
 	cargo rustc -Zbuild-std=core,alloc \
 		-Zbuild-std-features=compiler-builtins-mem \
 		--target riscv64gc-unknown-none-elf --release \
+		--features "$(APP_FEATURES)" \
 		--manifest-path apps/$(APP)/Cargo.toml -- \
 		-Clink-arg=-T../../libos/linker_riscv64.lds
 
@@ -31,6 +33,6 @@ justrun:
 		-bios default -kernel $(OUT_BIN) -nographic
 
 clean:
-	@rm -rf apps/$(APP)/target
+	@rm -rf apps/*/target
 
 .PHONY: all build clean run justrun FORCE

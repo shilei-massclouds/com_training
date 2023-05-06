@@ -1,6 +1,8 @@
 OUTPUT_ARCH(riscv)
 
-BASE_ADDRESS = 0xffffffc080200000;
+INCLUDE linker_riscv64_generated.lds
+
+BASE_ADDRESS = CFG_BASE_ADDRESS;
 
 ENTRY(_start)
 SECTIONS

@@ -34,3 +34,9 @@ pub fn putchar(c: usize) {
     #[allow(deprecated)]
     sbi_rt::legacy::console_putchar(c);
 }
+
+pub fn puts(s: &str) {
+    for c in s.chars() {
+        putchar(c as usize);
+    }
+}

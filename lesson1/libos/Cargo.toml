@@ -7,8 +7,11 @@ edition = "2021"
 
 [features]
 a0 = ["mmu-identity"]
+a1_enable = ["mmu-alterable/enable"]
+a1_disable = ["mmu-alterable/disable"]
 
 [dependencies]
 riscv = "0.10"
 sbi-rt = { version = "0.0.2", features = ["legacy"] }
 mmu-identity = { path = "../mmu_identity", optional = true }
+mmu-alterable = { path = "../mmu_alterable", optional = true }
