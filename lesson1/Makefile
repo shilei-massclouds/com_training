@@ -34,5 +34,6 @@ justrun:
 
 clean:
 	@rm -rf apps/*/target
+	@rm -rf apps/*/linker_riscv64_generated.lds
 
 .PHONY: all build clean run justrun FORCE

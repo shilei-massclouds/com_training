@@ -1,1 +1,0 @@
-CFG_BASE_ADDRESS = 0xffffffc080200000;
