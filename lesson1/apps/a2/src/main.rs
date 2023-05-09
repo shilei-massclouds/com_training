@@ -9,7 +9,7 @@ fn main() {
 
     verify();
 
-    if cfg!(feature = "a2_sv39") {
+    if cfg!(feature = "sv39") {
         libos::println!("Result: sv39 Okay!");
     } else {
         libos::println!("Result: sv48 Okay!");

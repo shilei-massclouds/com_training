@@ -1,7 +1,7 @@
 use std::io::Result;
 
 fn main() {
-    let feature = std::env::var("APP_FEATURES").unwrap();
+    let feature = std::env::var("STEP_FEATURES").unwrap();
     gen_linker_script(&feature).unwrap();
 }
 
