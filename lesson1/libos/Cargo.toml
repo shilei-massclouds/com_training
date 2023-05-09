@@ -7,8 +7,8 @@ edition = "2021"
 
 [features]
 a0 = ["mmu-identity"]
-a1_enable = ["mmu-alterable/enable"]
-a1_disable = ["mmu-alterable/disable"]
+mmu_enable = ["mmu-alterable/enable"]
+mmu_disable = ["mmu-alterable/disable"]
 sv39 = ["mmu-scheme/sv39"]
 sv48 = ["mmu-scheme/sv48"]
 

@@ -1,13 +1,18 @@
 #!/bin/sh
 
+if [ $# = 0 ]; then
+    echo "Please input steps, such as ./verify a1 a2"
+    exit 0;
+fi
+
 for step in "$@"; do
     case $step in
         a0)
             make clean && make STEP=a0 run > /tmp/a0
             ;;
         a1)
-            make clean && make STEP=a1 STEP_FEATURES=a1_disable run > /tmp/a1_mmu_disable
-            make clean && make STEP=a1 STEP_FEATURES=a1_enable run > /tmp/a1_mmu_enable
+            make clean && make STEP=a1 STEP_FEATURES=mmu_disable run > /tmp/a1_mmu_disable
+            make clean && make STEP=a1 STEP_FEATURES=mmu_enable run > /tmp/a1_mmu_enable
             ;;
         a2)
             make clean && make STEP=a2 STEP_FEATURES=sv39 run > /tmp/a2_sv39

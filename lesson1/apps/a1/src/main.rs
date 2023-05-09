@@ -6,7 +6,7 @@ fn main() {
     libos::init();
 
     libos::println!("\n[ArceOS Tutorial]: A1");
-    if cfg!(feature = "a1_disable") {
+    if cfg!(feature = "mmu_disable") {
         verify_disable();
     } else {
         verify_enable();

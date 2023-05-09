@@ -14,6 +14,8 @@ const PAGE_SHIFT: usize = 12;
 const PAGE_TABLE_ENTRIES: usize = 1 << (PAGE_SHIFT - 3);
 
 const _PAGE_PRESENT : u64 = 1 << 0;     /* Valid */
+
+#[cfg(feature = "sv48")]
 const PAGE_TABLE: u64 = _PAGE_PRESENT;
 
 pub const _PAGE_PFN_SHIFT: usize = 10;
@@ -49,6 +51,7 @@ pub unsafe fn pre_mmu() {
     BOOT_PT_ARRAY[0][index] = (0x80000 << 10) | 0xef;
 }
 
+#[cfg(feature = "sv48")]
 fn make_node(paddr: u64, prot: u64) -> u64 {
     let pfn = paddr >> PAGE_SHIFT;
     return (pfn << _PAGE_PFN_SHIFT) | prot;

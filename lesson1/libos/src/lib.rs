@@ -6,7 +6,7 @@
 // component mmu
 #[cfg(feature = "a0")]
 extern crate mmu_identity as mmu;
-#[cfg(any(feature = "a1_enable", feature = "a1_disable"))]
+#[cfg(any(feature = "mmu_enable", feature = "mmu_disable"))]
 extern crate mmu_alterable as mmu;
 #[cfg(any(feature = "sv39", feature = "sv48"))]
 extern crate mmu_scheme as mmu;
