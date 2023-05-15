@@ -4,25 +4,7 @@
 use drv0 as _;
 use drv1 as _;
 
-pub struct Driver<'a> {
-    name: &'a str,
-    compatible: &'a str,
-}
-
-impl Driver<'_> {
-    fn info<'a>(name: &'a str, compatible: &'a str) -> Driver<'a> {
-        Driver {
-            name,
-            compatible,
-        }
-    }
-}
-
-type InitFn = fn() -> Driver<'static>;
-
-pub struct CallEntry {
-    init_fn: InitFn,
-}
+use drv_common::CallEntry;
 
 #[no_mangle]
 fn main() {

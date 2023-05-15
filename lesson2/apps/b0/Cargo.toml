@@ -9,6 +9,7 @@ edition = "2021"
 libos = { path = "../../libos", features = ["b0"] }
 drv0 = { path = "../../drv0" }
 drv1 = { path = "../../drv1" }
+drv_common = { path = "../../drv_common" }
 
 [build-dependencies]
 cc = "1.0"
