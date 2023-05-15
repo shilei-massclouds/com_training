@@ -1,6 +1,9 @@
 #![no_std]
 #![no_main]
 
+use drv0 as _;
+use drv1 as _;
+
 pub struct Driver<'a> {
     name: &'a str,
     compatible: &'a str,
@@ -19,26 +22,6 @@ type InitFn = fn() -> Driver<'static>;
 
 pub struct CallEntry {
     init_fn: InitFn,
-}
-
-#[used]
-#[link_section = ".init_calls"]
-pub static DRV0_ENTRY: CallEntry = CallEntry {
-    init_fn: drv0_init_fn,
-};
-
-fn drv0_init_fn() -> Driver<'static> {
-    Driver::info("rtc", "google,goldfish-rtc")
-}
-
-#[used]
-#[link_section = ".init_calls"]
-pub static DRV1_ENTRY: CallEntry = CallEntry {
-    init_fn: drv1_init_fn,
-};
-
-fn drv1_init_fn() -> Driver<'static> {
-    Driver::info("uart", "ns16550a")
 }
 
 #[no_mangle]
