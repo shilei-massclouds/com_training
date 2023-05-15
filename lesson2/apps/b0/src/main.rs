@@ -7,8 +7,7 @@ pub struct Driver<'a> {
 }
 
 impl Driver<'_> {
-    fn new<'a>(name: &'a str, compatible: &'a str) -> Driver<'a> {
-        libos::println!("Register driver {}", name);
+    fn info<'a>(name: &'a str, compatible: &'a str) -> Driver<'a> {
         Driver {
             name,
             compatible,
@@ -19,30 +18,27 @@ impl Driver<'_> {
 type InitFn = fn() -> Driver<'static>;
 
 pub struct CallEntry {
-    id: usize,
     init_fn: InitFn,
 }
 
 #[used]
 #[link_section = ".init_calls"]
-pub static drv0_entry: CallEntry = CallEntry {
-    id: 0x1234,
+pub static DRV0_ENTRY: CallEntry = CallEntry {
     init_fn: drv0_init_fn,
 };
 
 fn drv0_init_fn() -> Driver<'static> {
-    Driver::new("drv0", "type0")
+    Driver::info("rtc", "google,goldfish-rtc")
 }
 
 #[used]
 #[link_section = ".init_calls"]
-pub static drv1_entry: CallEntry = CallEntry {
-    id: 0x4321,
+pub static DRV1_ENTRY: CallEntry = CallEntry {
     init_fn: drv1_init_fn,
 };
 
 fn drv1_init_fn() -> Driver<'static> {
-    Driver::new("drv1", "type1")
+    Driver::info("uart", "ns16550a")
 }
 
 #[no_mangle]
@@ -61,11 +57,10 @@ fn traverse_drivers() {
 
     let mut range_start = unsafe { initcalls_start() };
     let range_end = unsafe { initcalls_end() };
-    libos::println!("init calls range: 0x{:X} ~ 0x{:X}", range_start, range_end);
+    libos::println!("init calls range: 0x{:X} ~ 0x{:X}\n", range_start, range_end);
 
     while range_start < range_end {
         let entry = range_start as *const CallEntry;
-        libos::println!("Init call id {:x}", unsafe {(*entry).id});
         let drv = unsafe {((*entry).init_fn)()};
         libos::println!("Found driver '{}': compatible '{}'",
             drv.name, drv.compatible);
