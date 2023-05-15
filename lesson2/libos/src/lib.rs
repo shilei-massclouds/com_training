@@ -4,7 +4,7 @@
 #![feature(naked_functions)]
 
 // component mmu
-#[cfg(feature = "a0")]
+#[cfg(feature = "b0")]
 extern crate mmu_identity as mmu;
 #[cfg(any(feature = "mmu_enable", feature = "mmu_disable"))]
 extern crate mmu_alterable as mmu;

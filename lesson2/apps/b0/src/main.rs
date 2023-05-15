@@ -5,23 +5,11 @@
 fn main() {
     libos::init();
 
-    libos::println!("\n[ArceOS Tutorial]: A1");
-    if cfg!(feature = "mmu_disable") {
-        verify_disable();
-    } else {
-        verify_enable();
-    }
+    libos::println!("\n[ArceOS Tutorial]: B0");
+    verify();
 }
 
-fn verify_disable() {
-    unsafe {
-        let p: *const u32 = 0x22000000 as *const u32;
-        libos::println!("Access pflash: {:x} Okay!", *p);
-    }
-    libos::println!("Result: disable mmu Okay!");
-}
-
-fn verify_enable() {
+fn verify() {
     /*
      * The first two instrcutions at kernel entry:
      * ffffffc080200000:  842a  mv s0, a0
@@ -40,5 +28,5 @@ fn verify_enable() {
         }
     }
 
-    libos::println!("Result: enable mmu Okay!");
+    libos::println!("Result: Okay!");
 }

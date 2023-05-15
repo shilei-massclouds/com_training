@@ -1,7 +1,7 @@
 # Allows the usage of unstable features in stable compilers.
 export RUSTC_BOOTSTRAP := 1
 
-STEP ?= a0
+STEP ?= b0
 STEP_FEATURES ?=
 
 OBJCOPY ?= rust-objcopy --binary-architecture=riscv64
