@@ -7,3 +7,6 @@ edition = "2021"
 
 [dependencies]
 libos = { path = "../../libos", features = ["b0"] }
+
+[build-dependencies]
+cc = "1.0"
